@@ -1,0 +1,16 @@
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+
+from authorization.serializers import RegisterUserSerializer, UserSerializer
+
+class RegisterAPIView(GenericAPIView):
+  serializer_class = RegisterUserSerializer
+
+  def post(self, request, *args, **kwargs):
+    serializer = self.get_serializer(data=request.data)
+    if (serializer.is_valid()):
+      user = serializer.save()
+      return Response({
+        "user": UserSerializer(user, context=self.get_serializer_context()).data,
+        "message": "User created successfully! You can now redeem your access token.",
+      })

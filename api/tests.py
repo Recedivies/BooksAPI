@@ -1,11 +1,8 @@
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from api.models import Book
 
 from django.utils import timezone
-
-import json
 
 class BooksAPIViewTests(APITestCase):
   BASE_URL = "http://127.0.0.1:8000"
