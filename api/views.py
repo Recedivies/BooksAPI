@@ -2,44 +2,23 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters as rest_framework_filter
-from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from api.models import Book
 
-from .serializers import (
+from api.serializers import (
     AddBookSerializer,
     ListBookSerializer,
     ListBookByIdSerializer,
     UpdateBookSerializer,
     DeleteBookSerializer
 )
-# class ListCreateBook(ListCreateAPIView):
-#     filter_backends = [
-#         DjangoFilterBackend,
-#         rest_framework_filter.SearchFilter,
-#         rest_framework_filter.OrderingFilter
-#     ]
-#     filterset_fields = ['name', 'finished', 'reading']
-#     search_fields = ['name', 'finished', 'reading']
-#     queryset = Book.objects.all()
-#     serializer_class = ListBookSerializer
-
 class ListCreateBook(APIView):
     """
     Allowed methods: GET, POST
-    GET   books - lists all Books
+    GET   books - lists all Books with query_params
     POST  books - add book with given content
     """
-    # filter_backends = [
-    #     DjangoFilterBackend,
-    #     rest_framework_filter.SearchFilter,
-    #     rest_framework_filter.OrderingFilter
-    # ]
-    # filterset_fields = ['name', 'finished', 'reading']
-    # search_fields = ['name', 'reading', 'finished']
     serializer_class = ListBookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
@@ -100,6 +79,7 @@ class ListUpdateDeleteBookById(APIView):
     DELETE books/<id> - Delete Book by id
     """  
     serializer_class = UpdateBookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, pk):
         try:
