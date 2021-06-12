@@ -1,6 +1,4 @@
 .vscode
 __pycache__
-db.sqlite3
-test.py
 .coverage
 htmlcov
