@@ -1,0 +1,38 @@
+name: BooksAPI Tests
+
+on:
+  push:
+    branch:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: secrets
+
+    # services:
+    #   postgres:
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: psycopg2 prerequisites
+        run: sudo apt-get install libpq-dev
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Django Testing
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        run: |
+          coverage run manage.py test
+      - name: Tests coverage
+        run: |
+          coverage report -m

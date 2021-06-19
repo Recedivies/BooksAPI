@@ -19,15 +19,14 @@ class ListCreateBook(APIView):
     GET   books - lists all Books with query_params
     POST  books - add book with given content
     """
-    serializer_class = ListBookSerializer
+    serializer_class = AddBookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get(self, request):
         try:
             reading = request.query_params['reading']
             if (reading is not None):
-                books_all = Book.objects.all()
-                books = books_all.filter(reading=reading)
+                books = Book.objects.filter(reading=reading)
                 serializer = ListBookSerializer(books, many=True)
         except (KeyError, Book.DoesNotExist):
             try:

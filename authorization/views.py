@@ -8,9 +8,9 @@ class RegisterAPIView(GenericAPIView):
 
   def post(self, request, *args, **kwargs):
     serializer = self.get_serializer(data=request.data)
-    if (serializer.is_valid()):
-      user = serializer.save()
-      return Response({
-        "user": UserSerializer(user, context=self.get_serializer_context()).data,
-        "message": "User created successfully! You can now redeem your access token.",
-      })
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    return Response({
+      "user": UserSerializer(user, context=self.get_serializer_context()).data,
+      "message": "User created successfully! You can now redeem your access token.",
+    })

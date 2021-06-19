@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 class BooksAPIViewTests(APITestCase):
-  BASE_URL = "http://127.0.0.1:8000"
+  BASE_URL = "http://127.0.0.1:8000/api"
 
   def setUp(self) -> None:
     self.client = APIClient()
