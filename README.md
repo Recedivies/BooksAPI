@@ -170,7 +170,7 @@ This repository has its own Github workflows testing pipeline.
 - Get all books (empty list or few objects)
 - Unauthorized POST request
 - Not allowed method
-- Create message: with valid content, invalid content such as: without name, readPage > pageCount.
+- Create book: with valid content, invalid content such as: without name, readPage > pageCount.
 - Get all books with specified query endpoint, currently only reading and finished Query endpoint.
 
 ##### `api/books/{id}` tests:
