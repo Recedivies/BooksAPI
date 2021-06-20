@@ -4,3 +4,6 @@ __pycache__
 htmlcov/
 erd.dot
 aliases.bash
+script.txt
+note.txt
+test_api/

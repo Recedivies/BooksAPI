@@ -2,15 +2,16 @@
     <h1>BooksAPI</h1>
     <img alt="Python" src="https://img.shields.io/badge/python%20-%2314354C.svg?&style=for-the-badge&logo=python&logoColor=white"/>
     <img alt="Django" src="https://img.shields.io/badge/django%20-%23092E20.svg?&style=for-the-badge&logo=django&logoColor=white"/>
+    <img alt="Heroku" src="https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white">
 </div>
 
 ## Motivation behind this project and features:
 This project was inspired by [Dicoding Final Project Backend API](https://dicoding.com). 
-Initially I was finished the scholarship Dicoding Indonesia's class of "Belajar Membuat Aplikasi Backend untuk Pemula". I got 5 stars for my final grade but it quickly came to an end and I was not satisfied with the end results.
+Initially I was finished the scholarship Dicoding Indonesia class of "Belajar Membuat Aplikasi Backend untuk Pemula". I got 5 stars for my final grade but it quickly came to an end and I was not satisfied with the end results.
 
 ### Description:
 **REST API** with CRUD operations on books objects.
-Users can send requests to API to view books anonymously. In order to create/update/delete books **JWT** is required. (Authorization: Bearer {token} attached to the headers). API provides endpoints for registration and token retrieval.
+Users can send requests to API to view books anonymously. In order to create/update/delete books **JWT** is required. (Authorization: Bearer {token} attached to the headers). API provides endpoints for registration, token retrieval, change the password, update profile, and unauthorization token. I used black list as a log out functionality. The simple JWT blacklist app implements its outstanding and blacklisted token lists using two models: OutstandingToken and BlacklistedToken.
 
 ### Used Frameworks, libraries, tools:
 - Django + Django REST Framework
@@ -38,14 +39,17 @@ Books are saved and updated using modified ModelSerializer.
 ### API Endpoints:
 | HTTP Method | API endpoint            | Request body                                                                                                           | Response body                                                                                                                                           | Description                                                                    | Authorization header |
 |-------------|-------------------------|---------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|----------------------|
-| POST        | [api/auth/register/](https://books-api-daftcode.herokuapp.com/api/auth/register/)       | Object {<br> username: str,<br> password: str<br>} | Object {<br> id: number,<br> username: str,<br> email: str,<br> first_name: str,<br> last_name: str,<br> is_staff: bool<br>}                            | Creates new user. Returns simplified user object.                              | None                 |
-| POST        | [api/auth/token/](https://books-api-daftcode.herokuapp.com/api/auth/token/)          | Object {<br> username: str,<br> password: str<br>} | Object {<br> refresh: str,<br> access: str<br>}                                                                                                         | Returns personal JWT access and refresh tokens.                                | None                 |
-| POST        | [api/auth/token/refresh/](https://books-api-daftcode.herokuapp.com/api/auth/token/refresh)  | Object {<br> refresh: str<br>}                     | Object {<br> access: str<br>}                                                                                                                           | Returns refreshed JWT access token.                                            | None                 |
-| GET         | [api/books](https://books-api-daftcode.herokuapp.com/api/messages)            |                          X                         | Array\<Object\> [<br> Object {<br>  id: str,<br>  name: str,<br> published: str<br>}<br>] | Lists all of the existing book objects.                                     | None                 |
-| POST        | [api/books](https://books-api-daftcode.herokuapp.com/api/messages)             | Object {<br> name: str,<br> year: number, <br> author: str, <br> summary: str, <br> publisher: str, <br>pageCount: number, <br>readPage: number, <br>}                     | Object {<br> bookId: str<br>}                                   | Creates and returns new book object with given content.                     | Bearer {token}       |
-| GET         | [api/books/{id}](https://books-api-daftcode.herokuapp.com/api/messages/1)       |                          X                         | Object {<br> id: str,<br> name: str, <br> year: number,<br> author: str, <br>summary: str, <br> publisher: str, <br>pageCount: number, <br>readPage: number, <br> finished: boolean, <br>reading: boolean,<br>insertedAt: datetime,<br> updatedAt: datetime<br>}                                   | Retrieves book object with given ID.                                        | None                 |
-| PUT         | [api/books/{id}](https://books-api-daftcode.herokuapp.com/api/messages/1)       | Object {<br> name: str,<br> year: number, <br> author: str, <br> summary: str, <br> publisher: str, <br>pageCount: number, <br>readPage: number, <br>}                     | X | Perfoms full update on book object with given ID. Returns updated object.| Bearer {token}       |
-| DELETE      | [api/books/{id}](https://books-api-daftcode.herokuapp.com/api/messages/1)        |                          X                         |                                                                            X                                                                            | Deletes book object with given ID.                                          | Bearer {token}       |
+| POST        | [api/auth/register/](https://books-api-daftcode.herokuapp.com/api/auth/register/)       | Object {<br> username: str,<br> password: str,<br> password2: str,<br> email: str,<br> first_name: str,<br> last_name: str<br>} | Object {<br> id: number,<br> username: str,<br> email: str,<br> first_name: str,<br> last_name: str<br>}                            | Creates new user. Returns simplified user object.                              | None                 |
+| POST        | [api/auth/login/](https://books-api-daftcode.herokuapp.com/api/auth/login/)          | Object {<br> username: str,<br> password: str<br>} | Object {<br> refresh: str,<br> access: str<br>}                                                                                                         | Returns personal JWT access and refresh tokens.                                | None                 |
+| POST        | [api/auth/login/refresh/](https://books-api-daftcode.herokuapp.com/api/auth/login/refresh/)  | Object {<br> refresh: str<br>}                     | Object {<br> access: str<br>}                                                                                                                           | Returns refreshed JWT access token.                                            | None                 |
+| PUT         | [api/auth/password/{id}/](https://books-api-daftcode.herokuapp.com/api/auth/password/1/)                | Object {<br> password: str,<br> password2: str,<br> old_password: str<br>}                                    |                          X                         |Performs change on password with given ID. Returns updated password.        | Bearer {token}                    |
+| PUT         | [api/auth/profile/{id}/](https://books-api-daftcode.herokuapp.com/api/auth/profile/1/)        | Object {<br>username: str,<br> first_name: str, <br> last_name: str, <br> email: str<br>}                 |                          X                         |Performs change on profile with given ID. Returns updated object.                                              | Bearer {token}                                       |
+| POST        | [api/auth/logout/](https://books-api-daftcode.herokuapp.com/api/auth/logout/)   | Object {<br> refresh: str<br>}                       |                         X                          | Perform unauthorization user (logout).                                 | Bearer {token}                                       | 
+| GET         | [api/books/](https://books-api-daftcode.herokuapp.com/api/books/)            |                          X                         | Array\<Object\> [<br> Object {<br>  id: str,<br>  name: str,<br> published: str<br>}<br>] | Lists all of the existing book objects.                                     | None                 |
+| POST        | [api/books/](https://books-api-daftcode.herokuapp.com/api/books/)             | Object {<br> name: str,<br> year: number, <br> author: str, <br> summary: str, <br> publisher: str, <br>pageCount: number, <br>readPage: number, <br>}                     | Object {<br> bookId: str<br>}                                   | Creates and returns new book object with given content.                     | Bearer {token}       |
+| GET         | [api/books/{id}/](https://books-api-daftcode.herokuapp.com/api/books/1)       |                          X                         | Object {<br> id: str,<br> name: str, <br> year: number,<br> author: str, <br>summary: str, <br> publisher: str, <br>pageCount: number, <br>readPage: number, <br> finished: boolean, <br>reading: boolean,<br>insertedAt: datetime,<br> updatedAt: datetime<br>}                                   | Retrieves book object with given ID.                                        | None                 |
+| PUT         | [api/books/{id}/](https://books-api-daftcode.herokuapp.com/api/books/1)       | Object {<br> name: str,<br> year: number, <br> author: str, <br> summary: str, <br> publisher: str, <br>pageCount: number, <br>readPage: number, <br>}                     | X | Perfoms full update on book object with given ID. Returns updated object.| Bearer {token}       |
+| DELETE      | [api/books/{id}/](https://books-api-daftcode.herokuapp.com/api/books/1)        |                          X                         |                                                                            X                                                                            | Deletes book object with given ID.                                          | Bearer {token}       |
 
 Application also uses [Swagger](https://swagger.io/) for documentation purposes and 
 also as a simpler and more visually appealing interface than individual REST Framework views.
@@ -83,7 +87,7 @@ const request = fetch('http://127.0.0.1:8000/api/auth/token/', {
 
 const {refresh, access} = request;
 ```
-If your token expires **(access token lives for 2 hours, refresh token - 24h)**
+If your token expires **(access token lives for 1 hours, refresh token - 24h)**
 ```javascript
 const refresh = 'refresh token you previously redeemed or had stored';
 
@@ -99,15 +103,13 @@ const request = fetch('http://127.0.0.1:8000/api/auth/token/refresh/', {
   .then(data => console.log(data));
 
 const { access } = request;
-
-
 ```
 Now you can send requests to the API endpoints. Attach Authorization header if you want to POST/PUT/DELETE.
 ```python
 import json
 import requests
 
-token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0MTAyMzYwLCJqdGkiOiJiZjRhNzliOTFmMGY0ZjZhODMxNmIxN2Q2MTY2ZDg3NiIsInVzZXJfaWQiOjh9._QStDlxYxz2hFnnv4DapabN3KDChws9MHuZQNfzPkjg"
+token = "your JWT access token"
 headers = {
     'Authorization': f'Bearer {token}',
     'Content-Type': 'application/json' 
@@ -178,6 +180,7 @@ This repository has its own Github workflows testing pipeline.
 
 ##### `api/auth/...` tests:
 - Register new user, get token for them, refresh token (views from external packages are already tested by the authors)
+- Update profile, change password, unauthorize user (logout), blacklist token and outstanding token.
 
 ### Deployment: 
 This repository has been deployed to Heroku. You can visit [here](https://books-api-daftcode.herokuapp.com/)
@@ -234,7 +237,7 @@ coverage report -m
 ```
 
 ### Possible future content:
-- User account customization
 - Permissions to access book (e.g only author can modify)
 - More Query endpoint(get book by other attributes)
 - Pagination (so that user would not receive everything at once)
+- 

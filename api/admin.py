@@ -15,4 +15,5 @@ class BookAdmin(admin.ModelAdmin):
     'readPage', 
     'reading',
     'insertedAt',
-    'updatedAt')
+    'updatedAt'
+  )

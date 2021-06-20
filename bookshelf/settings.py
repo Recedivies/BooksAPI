@@ -43,15 +43,16 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_extensions',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist', # for blacklist jwt token
     # apps
     'api',
     'authorization',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -145,7 +146,7 @@ REST_FRAMEWORK = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=2),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
 
@@ -155,6 +156,6 @@ SWAGGER_SETTINGS = {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header',
-      }
+        }
     }
 }

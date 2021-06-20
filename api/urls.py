@@ -7,5 +7,5 @@ from .views import (
 
 urlpatterns = [
 	path('books/', ListCreateBook.as_view()),
-	path('books/<str:pk>', ListUpdateDeleteBookById.as_view()),
+	path('books/<str:pk>/', ListUpdateDeleteBookById.as_view()),
 ]

@@ -95,7 +95,7 @@ class BooksAPIViewTests(APITestCase):
     url = f"{self.BASE_URL}/books/"
     book = self.create_book_with_complete_data
     data = self.book_with_complete_data
-    url_id = f"{self.BASE_URL}/books/{book.id}"
+    url_id = f"{self.BASE_URL}/books/{book.id}/"
 
     response = self.client.post(url, data)
     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -106,7 +106,7 @@ class BooksAPIViewTests(APITestCase):
     response = self.client.delete(url_id, data)
     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
   
-  def test_list_or_create_wrong_method(self):
+  def test_wrong_method(self):
     """Test ListCreateBook with not allowed methods"""
     url = f"{self.BASE_URL}/books/"
 
@@ -144,51 +144,51 @@ class BooksAPIViewTests(APITestCase):
 
   def test_get_detail_book_with_correct_id(self):
     book = self.create_book_with_complete_data
-    url = f"{self.BASE_URL}/books/{book.id}"
+    url = f"{self.BASE_URL}/books/{book.id}/"
     response = self.client.get(url, format="json", **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
   def test_get_detail_book_with_invalid_id(self):
-    url = f"{self.BASE_URL}/books/xxxxxxxx"
+    url = f"{self.BASE_URL}/books/xxxxxxxx/"
     response = self.client.get(url, format="json", **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
   def test_update_book_with_complete_data(self):
     book = self.create_book_with_complete_data
     updated_data = self.book_with_complete_data
-    url = f"{self.BASE_URL}/books/{book.id}"
+    url = f"{self.BASE_URL}/books/{book.id}/"
     response = self.client.put(url, updated_data, format="json", **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_200_OK)
   
   def test_update_book_without_name(self):
     book = self.create_book_with_complete_data
     updated_data = self.book_without_name
-    url = f"{self.BASE_URL}/books/{book.id}"
+    url = f"{self.BASE_URL}/books/{book.id}/"
     response = self.client.put(url, updated_data, format="json", **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
   def test_update_book_with_page_read_more_than_page_count(self):
     book = self.create_book_with_complete_data
     updated_data = self.book_with_page_read_more_than_page_count
-    url = f"{self.BASE_URL}/books/{book.id}"
+    url = f"{self.BASE_URL}/books/{book.id}/"
     response = self.client.put(url, updated_data, format="json", **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
   def test_update_book_with_invalid_id(self):
     book = self.create_book_with_complete_data
     updated_data = self.book_with_complete_data
-    url = f"{self.BASE_URL}/books/xxxxx"
+    url = f"{self.BASE_URL}/books/xxxxx/"
     response = self.client.put(url, updated_data, format="json", **self.bearer_token)
 
   def test_delete_with_correct_id(self):
     book = self.create_book_with_complete_data
-    url = f"{self.BASE_URL}/books/{book.id}"
+    url = f"{self.BASE_URL}/books/{book.id}/"
     response = self.client.delete(url, **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_200_OK)
     
   def test_delete_with_invalid_id(self):
     book = self.create_book_with_complete_data
-    url = f"{self.BASE_URL}/books/xxxxx"
+    url = f"{self.BASE_URL}/books/xxxxx/"
     response = self.client.delete(url, **self.bearer_token)
     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
