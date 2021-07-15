@@ -11,13 +11,15 @@ from django.utils import timezone
 
 class BooksAPIViewTests(APITestCase):
     BASE_URL = "http://127.0.0.1:8000/api"
+    AUTH_URL = "http://127.0.0.1:8000/api/auth"
 
     def setUp(self) -> None:
         self.client = APIClient()
 
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.user = User.objects.create(username='test', password='test123')
+        cls.user = User.objects.create(username='test', password='Rcd320112',
+                                       email='test@gmail.com', first_name='test', last_name='123')
 
     @property
     def bearer_token(self):
@@ -106,6 +108,19 @@ class BooksAPIViewTests(APITestCase):
 
         response = self.client.delete(url_id, data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # def test_change_password(self):
+    #     user_id = self.user.id
+    #     url = f"{self.AUTH_URL}/password/{user_id}/"
+    #     data = {
+    #         "password": "rcd320112",
+    #         "password2": "rcd320112",
+    #         "old_password": f"{self.user.password}"
+    #     }
+
+    #     response = self.client.put(url, data, format="json", **self.bearer_token)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(self.user.password, data.password)
 
     def test_wrong_method(self):
         """Test ListCreateBook with not allowed methods"""
