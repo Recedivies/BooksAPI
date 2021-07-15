@@ -47,7 +47,7 @@ jobs:
         #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         run: |
-          coverage run --omit='*/venv/*' manage.py test
+          coverage run manage.py test
       - name: Tests coverage
         run: |
           coverage report -m
