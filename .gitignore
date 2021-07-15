@@ -8,3 +8,4 @@ script.txt
 note.txt
 test_api/
 venv/
+db.sqlite3

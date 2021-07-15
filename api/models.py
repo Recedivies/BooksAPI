@@ -3,14 +3,16 @@ from django.core.validators import MinValueValidator
 import random
 import string
 
-def generate_unique_id():
-  length = 16
 
-  while True:
-      id_unique = "".join(random.choices(string.digits + string.ascii_letters, k=length))
-      if (Book.objects.filter(id = id_unique).count() == 0):
-          break
-  return id_unique
+def generate_unique_id():
+    length = 16
+
+    while True:
+        id_unique = "".join(random.choices(string.digits + string.ascii_letters, k=length))
+        if (Book.objects.filter(id=id_unique).count() == 0):
+            break
+    return id_unique
+
 
 class Book(models.Model):
     id = models.CharField(max_length=16, default=generate_unique_id, unique=True, primary_key=True)
@@ -25,9 +27,9 @@ class Book(models.Model):
     reading = models.BooleanField(default=False)
     insertedAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
-        return  f"{self.id}, Name: {self.name}\n" \
+        return f"{self.id}, Name: {self.name}\n" \
             f"Year: {self.year}\n" \
             f"Author: {self.author}\n" \
             f"Summary: {(self.summary[:30] + '...') if len(self.summary) > 30 else self.summary}\n" \

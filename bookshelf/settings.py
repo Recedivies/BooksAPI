@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-6s+$6kwaa%eh91!jej_hts3n)&5(e$c3w4nreautaz&uf-2_l@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_extensions',
     'corsheaders',
+    'django_filters',
     'rest_framework_simplejwt.token_blacklist',  # for blacklist jwt token
     # apps
     'api',
@@ -151,6 +152,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
     ],
 }
 

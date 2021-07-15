@@ -3,14 +3,41 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+from api.filters import BooksFilter
 from api.models import Book
 from api.serializers import (
     AddBookSerializer,
     ListBookSerializer,
     ListBookByIdSerializer,
     UpdateBookSerializer,
-    DeleteBookSerializer,
 )
+
+
+def inValidPage(request):
+    readPage = int(request.data['readPage'])
+    pageCount = int(request.data['pageCount'])
+    return readPage > pageCount
+
+
+def responseReadPageGreaterThanPageCount():
+    return Response({
+        "status": "fail",
+        "message": "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+def responseNoName():
+    return Response({
+        "status": "fail",
+        "message": "Gagal menambahkan buku. Mohon isi nama buku"
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+def responseNoId(info):
+    return Response({
+        "status": "fail",
+        "message": f"{info}. Id tidak ditemukan"
+    }, status=status.HTTP_404_NOT_FOUND)
 
 
 class ListCreateBook(ListCreateAPIView):
@@ -20,42 +47,21 @@ class ListCreateBook(ListCreateAPIView):
     POST  books - add book with given content
     """
     queryset = Book.objects.all()
-    serializer_class = ListBookSerializer
+    serializer_class = AddBookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filterset_class = BooksFilter
 
-    def get(self, request):
-        books = Book.objects.all()
+    def get(self, request, *args, **kwargs):
+        books = self.filter_queryset(self.get_queryset())
         serializer = ListBookSerializer(instance=books, many=True)
-        # try:
-        #     reading = request.query_params['reading']
-        #     if (reading is not None):
-        #         books = Book.objects.filter(reading=reading)
-        #         serializer = ListBookSerializer(books, many=True)
-        # except (KeyError, Book.DoesNotExist):
-        #     try:
-        #         finished = request.query_params['finished']
-        #         if (finished is not None):
-        #             books = Book.objects.filter(finished=finished)
-        #             serializer = ListBookSerializer(books, many=True)
-        #     except (KeyError, Book.DoesNotExist):
-        #         books = Book.objects.all()
-        #         serializer = ListBookSerializer(books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         if (request.data['name'] == ''):
-            return Response({
-                "status": "fail",
-                "message": "Gagal menambahkan buku. Mohon isi nama buku"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return responseNoName()
 
-        readPage = request.data['readPage']
-        pageCount = request.data['pageCount']
-        if (int(readPage) > int(pageCount)):
-            return Response({
-                "status": "fail",
-                "message": "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        if (inValidPage(request)):
+            return responseReadPageGreaterThanPageCount()
 
         serializer = AddBookSerializer(data=request.data)
         if (serializer.is_valid()):
@@ -76,10 +82,11 @@ class ListCreateBook(ListCreateAPIView):
 
 class ListUpdateDeleteBookById(RetrieveUpdateDestroyAPIView):
     """
-    Allowed methods: GET, PUT, DELETE
-    GET    books/<id> - List Book by id
-    PUT    books/<id> - Edit Book by id
-    DELETE books/<id> - Delete Book by id
+    Allowed methods: GET, PUT, PATCH, DELETE
+    GET    books/<id>/ - List Book by id
+    PUT    books/<id>/ - Edit Entire Book by id
+    PATCH  books/<id>/ - Edit Partial Book by id
+    DELETE books/<id>/ - Delete Book by id
     """
     queryset = Book.objects.all()
     serializer_class = UpdateBookSerializer
@@ -91,35 +98,44 @@ class ListUpdateDeleteBookById(RetrieveUpdateDestroyAPIView):
             serializer = ListBookByIdSerializer(book, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Book.DoesNotExist:
-            return Response({
-                "status": "fail",
-                "message": "Buku tidak ditemukan"
-            }, status=status.HTTP_404_NOT_FOUND)
+            return responseNoId("Gagal mendapatkan data buku")
 
     def put(self, request, pk):
         if (request.data['name'] == ''):
-            return Response({
-                "status": "fail",
-                "message": "Gagal memperbarui buku. Mohon isi nama buku"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return responseNoName()
 
-        readPage = request.data['readPage']
-        pageCount = request.data['pageCount']
-        if (int(readPage) > int(pageCount)):
-            return Response({
-                "status": "fail",
-                "message": "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        if (inValidPage(request)):
+            return responseReadPageGreaterThanPageCount()
+
         try:
             book = Book.objects.get(pk=pk)
             serializer = UpdateBookSerializer(book, data=request.data)
             if (serializer.is_valid()):
                 serializer.save()
         except Book.DoesNotExist:
-            return Response({
-                "status": "fail",
-                "message": "Gagal memperbarui buku. Id tidak ditemukan"
-            }, status=status.HTTP_404_NOT_FOUND)
+            return responseNoId("Gagal memperbarui buku")
+
+        return Response({
+            "status": "success",
+            "message": "Buku berhasil diperbarui"
+        }, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        if (request.data.get('name') is not None and request.data['name'] == ''):
+            return responseNoName()
+
+        if (request.data.get('readPage') is not None and request.data.get('pageCount') is not None):
+            if (inValidPage(request)):
+                return responseReadPageGreaterThanPageCount()
+
+        try:
+            book = Book.objects.get(pk=pk)
+            serializer = UpdateBookSerializer(
+                book, data=request.data, partial=True)
+            if (serializer.is_valid()):
+                serializer.save()
+        except Book.DoesNotExist:
+            return responseNoId("Gagal memperbarui buku")
 
         return Response({
             "status": "success",
@@ -131,10 +147,7 @@ class ListUpdateDeleteBookById(RetrieveUpdateDestroyAPIView):
             book = Book.objects.get(pk=pk)
             book.delete()
         except Book.DoesNotExist:
-            return Response({
-                "status": "fail",
-                "message": "Buku gagal dihapus. Id tidak ditemukan"
-            }, status=status.HTTP_404_NOT_FOUND)
+            return responseNoId("Buku gagal dihapus")
 
         return Response({
             "status": "success",

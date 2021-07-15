@@ -3,30 +3,30 @@ name: BooksAPI Tests
 on:
   push:
     branches:
-      - master
-      - development
-      - heroku
+      - main
+      # - development
+      # - heroku
 
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: secrets
+    # environment: secrets
 
-    services:
-      postgres:
-        image: postgres:10.8
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    # services:
+    #   postgres:
+    #     image: postgres:10.8
+    #     env:
+    #       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+    #       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    #       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+    #     ports:
+    #       - 5432:5432
+    #     # needed because the postgres container does not provide a healthcheck
+    #     options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
@@ -41,13 +41,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Django testing
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        # env:
+        #   SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         run: |
-          coverage run manage.py test
+          coverage run --omit='*/venv/*' manage.py test
       - name: Tests coverage
         run: |
           coverage report -m

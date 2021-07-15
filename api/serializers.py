@@ -45,8 +45,3 @@ class UpdateBookSerializer(serializers.ModelSerializer):
             'readPage',
             'reading'
         )
-
-
-class DeleteBookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Book

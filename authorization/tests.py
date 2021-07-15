@@ -4,9 +4,11 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import (
-  OutstandingToken,
-  BlacklistedToken
+    OutstandingToken,
+    BlacklistedToken
 )
+
+
 class AuthViewsTests(TestCase):
     AUTH_URL = 'http://127.0.0.1:8000/api/auth'
 
@@ -16,10 +18,10 @@ class AuthViewsTests(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.user = User.objects.create_user(
-            username='test', 
+            username='test',
             password='testing123',
         )
-    
+
     @property
     def bearer_token(self):
         """Returns Authorization headers, which can be passed to APIClient instance."""
@@ -66,7 +68,7 @@ class AuthViewsTests(TestCase):
         data = response.json()
         self.assertIn('access', result)
         self.assertNotEqual(access, data['access'])
-    
+
     def test_change_password(self):
         url = f"{self.AUTH_URL}/password/1/"
         data = {
@@ -74,7 +76,8 @@ class AuthViewsTests(TestCase):
             "password2": "testing41",
             "old_password": "testing123"
         }
-        response = self.client.put(url, data, format="json", **self.bearer_token)
+        response = self.client.put(
+            url, data, format="json", **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_profile(self):
@@ -85,7 +88,8 @@ class AuthViewsTests(TestCase):
             'last_name': 'test2',
             'email': 'test@ui.ac.id'
         }
-        response = self.client.put(url, data, format="json", **self.bearer_token)
+        response = self.client.put(
+            url, data, format="json", **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_logout_user(self):
@@ -93,14 +97,16 @@ class AuthViewsTests(TestCase):
             'username': 'test',
             'password': 'testing123',
         }).json()
+
         access, refresh = result['access'], result['refresh']
         url = f'{self.AUTH_URL}/logout/'
         data = {
             "refresh": refresh
         }
-        response = self.client.post(url, data, format="json", **self.bearer_token)
+        response = self.client.post(
+            url, data, format="json", **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
-    
+
     def test_outstanding_and_blacklist_token(self):
         result = self.client.post(f'{self.AUTH_URL}/login/', data={
             'username': 'test',
@@ -112,5 +118,6 @@ class AuthViewsTests(TestCase):
         data = {
             "refresh": refresh
         }
-        response = self.client.post(url, data, format="json", **self.bearer_token)
+        response = self.client.post(
+            url, data, format="json", **self.bearer_token)
         self.assertEqual(BlacklistedToken.objects.count(), 1)
