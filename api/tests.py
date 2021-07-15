@@ -137,7 +137,7 @@ class BooksAPIViewTests(APITestCase):
             url, data, format="json", **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_book_with_page_read_more_than_page_count(self):
+    def test_create_book_with_page_read_more_than_page_count(self):
         url = f"{self.BASE_URL}/books/"
         data = self.book_with_page_read_more_than_page_count
         response = self.client.post(
@@ -185,11 +185,11 @@ class BooksAPIViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_book_with_invalid_id(self):
-        book = self.create_book_with_complete_data
         updated_data = self.book_with_complete_data
         url = f"{self.BASE_URL}/books/xxxxx/"
         response = self.client.put(
             url, updated_data, format="json", **self.bearer_token)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_with_correct_id(self):
         book = self.create_book_with_complete_data
@@ -198,35 +198,23 @@ class BooksAPIViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete_with_invalid_id(self):
-        book = self.create_book_with_complete_data
         url = f"{self.BASE_URL}/books/xxxxx/"
         response = self.client.delete(url, **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_filter_get_book_with_create_finished_book(self):
-        book = Book.objects.create(
-            name="Recedivies",
-            year=2020,
-            author="Rois",
-            summary="Nice",
-            publisher="Tono",
-            pageCount=400,
-            readPage=200,
-            finished=True,
-            reading=True,
-        )
-        self.assertEqual(Book.objects.filter(finished=1).count(), 1)
+    def test_filter_get_book_with_create_unfinished_book(self):
+        url = f"{self.BASE_URL}/books/"
+        data = self.book_with_complete_data
+        response = self.client.post(url, data, format="json", **self.bearer_token)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Book.objects.filter(finished=False).count(), 1)
+        self.assertEqual(Book.objects.filter(finished=True).count(), 0)
 
     def test_filter_create_unreading_book(self):
-        book = Book.objects.create(
-            name="Recedivies",
-            year=2020,
-            author="Rois",
-            summary="Nice",
-            publisher="Tono",
-            pageCount=400,
-            readPage=200,
-            finished=True,
-            reading=False,
-        )
-        self.assertEqual(Book.objects.filter(reading=1).count(), 0)
+        url = f"{self.BASE_URL}/books/"
+        data = self.book_with_complete_data
+        data['reading'] = False
+        response = self.client.post(url, data, format="json", **self.bearer_token)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Book.objects.filter(reading=True).count(), 0)
+        self.assertEqual(Book.objects.filter(reading=False).count(), 1)

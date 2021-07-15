@@ -60,6 +60,7 @@ class AuthViewsTests(TestCase):
             'password': 'testing123',
         }
         result = self.client.post(url, data).json()
+        self.assertEqual(len(result), 2)
         access, refresh = result['access'], result['refresh']
         response = self.client.post(f'{self.AUTH_URL}/login/refresh/', data={
             'refresh': refresh
@@ -97,8 +98,7 @@ class AuthViewsTests(TestCase):
             'username': 'test',
             'password': 'testing123',
         }).json()
-
-        access, refresh = result['access'], result['refresh']
+        refresh = result['refresh']
         url = f'{self.AUTH_URL}/logout/'
         data = {
             "refresh": refresh
@@ -113,11 +113,12 @@ class AuthViewsTests(TestCase):
             'password': 'testing123',
         }).json()
         self.assertEqual(OutstandingToken.objects.count(), 1)
-        access, refresh = result['access'], result['refresh']
+        refresh = result['refresh']
         url = f'{self.AUTH_URL}/logout/'
         data = {
             "refresh": refresh
         }
         response = self.client.post(
             url, data, format="json", **self.bearer_token)
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
         self.assertEqual(BlacklistedToken.objects.count(), 1)
