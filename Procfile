@@ -1,1 +1,3 @@
-web: gunicorn bookshelf.wsgi --log-file -
+
+release: python manage.py migrate --no-input
+web: gunicorn bookshelf.wsgi
