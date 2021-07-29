@@ -41,6 +41,8 @@ jobs:
       - name: Link with Flake8
         run: |
           flake8
+        with:
+          max-line-length: "119"
       - name: Django testing
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
