@@ -210,7 +210,7 @@ This repository has its own Github workflows testing pipeline.
 
 ### Deployment:
 
-This repository has been deployed to Heroku. You can visit [here](https://books-api-dicoding.herokuapp.com/)
+This repository has been deployed to Heroku. You can visit [here](https://books-api-dicoding.herokuapp.com/swagger/)
 
 #### Step to reproduce deployment:
 
